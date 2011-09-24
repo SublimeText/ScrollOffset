@@ -1,14 +1,4 @@
 """
-Add the following to your user file prefs:
-	"scroll_offset_vertical" : 8,
-	"scroll_offset_horizontal" : 20
-replacing 8 and 20 with whatever numbers you like (those are the numbers I use).
-
-
-Also if you want sweet debug markers then you can add this:
-	"scroll_offset_guides" : true
-Note how the markers always stay on the screen. Creepy!
-
 Known issue:
 	selecting near the edge of the screen with the mouse is kind of wonky
 """
@@ -43,19 +33,19 @@ def find_selection_limits(view):
 	return first_caret_row, last_caret_row, leftmost_caret_rowcol, rightmost_caret_rowcol
 
 class ScrollOffset(sublime_plugin.EventListener):
-	def on_activated(self,view):
+	def on_activated(self, view):
 		self.on_selection_modified(view)
 	
 	def on_selection_modified(self, view):
-		settings = view.settings()
-		vertical_offset = abs(int(settings.get("scroll_offset_vertical") or 0))
-		horizontal_offset = abs(int(settings.get("scroll_offset_horizontal") or 0))
+		settings = sublime.load_settings('Scroll Offset.sublime-settings')
+		vertical_offset = abs(int(settings.get("vertical_margin") or 0))
+		horizontal_offset = abs(int(settings.get("horizontal_margin") or 0))
 		if not any((vertical_offset, horizontal_offset)):
 			return
 		if len(view.sel()) == 0:
 			return
 		
-		show_guides = bool(settings.get("scroll_offset_guides"))
+		show_guides = bool(settings.get("show_debug_guides"))
 		
 		(first_caret_row, last_caret_row,
 		leftmost_caret_rowcol, rightmost_caret_rowcol) = find_selection_limits(view)
@@ -83,18 +73,22 @@ class ScrollOffset(sublime_plugin.EventListener):
 		
 		bottom_desired_pos = view.text_point(last_desired_row, 0)
 		top_desired_pos = view.text_point(first_desired_row, 0)
-		left_desired_pos = max(view.text_point(*leftmost_caret_rowcol) - horizontal_offset,
-													 view.line(view.text_point(*leftmost_caret_rowcol)).begin())
-		right_desired_pos = min(view.text_point(*rightmost_caret_rowcol) + horizontal_offset,
-														view.line(view.text_point(*rightmost_caret_rowcol)).end())
+		
+		left_desired_pos = max(	view.text_point(*leftmost_caret_rowcol) - horizontal_offset,
+		                       	view.line(view.text_point(*leftmost_caret_rowcol)).begin())
+		
+		right_desired_pos = min(	view.text_point(*rightmost_caret_rowcol) + horizontal_offset,
+		                        	view.line(view.text_point(*rightmost_caret_rowcol)).end())
 		
 		#position vertically
 		view.show(sublime.Region(top_desired_pos, bottom_desired_pos), False)
 		#position horizontally
 		view.show(sublime.Region(left_desired_pos, right_desired_pos), False)
 		if(show_guides):
-			view.add_regions("Caret", [sublime.Region(*([top_desired_pos]*2)),
-																sublime.Region(*([bottom_desired_pos]*2)),
-																sublime.Region(*([left_desired_pos]*2)),
-																sublime.Region(*([right_desired_pos]*2))],
-																"comment", sublime.DRAW_EMPTY)
+			view.add_regions("Scroll_Offset_Guides",	[sublime.Region(*([top_desired_pos]*2)),
+			                                        	sublime.Region(*([bottom_desired_pos]*2)),
+			                                        	sublime.Region(*([left_desired_pos]*2)),
+			                                        	sublime.Region(*([right_desired_pos]*2))],
+			                                        	"comment", sublime.DRAW_EMPTY)
+		else:
+			view.erase_regions("Scroll_Offset_Guides")
