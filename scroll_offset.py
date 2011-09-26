@@ -37,6 +37,10 @@ class ScrollOffset(sublime_plugin.EventListener):
 		self.on_selection_modified(view)
 	
 	def on_selection_modified(self, view):
+		word_wrap = view.settings().get("word_wrap")
+		if word_wrap:
+			return
+		
 		settings = sublime.load_settings('Scroll Offset.sublime-settings')
 		vertical_offset = abs(int(settings.get("vertical_margin") or 0))
 		horizontal_offset = abs(int(settings.get("horizontal_margin") or 0))
