@@ -7,6 +7,10 @@ Known issue:
 
 import sublime
 import sublime_plugin
+try:
+	import mouse_event_listener
+except:
+	print "ScrollOffset: Install Mouse Event Listener (https://github.com/SublimeText/MouseEventListener) to ignore mouse clicks!"
 
 def num_visible_rows_in_view(view):
 	vr = view.visible_region()
@@ -33,12 +37,17 @@ def find_selection_limits(view):
 	return first_caret_row, last_caret_row, leftmost_caret_rowcol, rightmost_caret_rowcol
 
 class ScrollOffset(sublime_plugin.EventListener):
-	def on_activated(self, view):
-		self.on_selection_modified(view)
-	
+	ignore_count = 0
+	def on_pre_mouse_down(self, args):
+		self.ignore_count = 3
+	def on_post_mouse_down(self, click_point):
+		self.ignore_count = 1
 	def on_selection_modified(self, view):
 		word_wrap = view.settings().get("word_wrap")
-		if word_wrap:
+		if self.ignore_count:
+			self.ignore_count -= 1
+			return
+		if view.is_loading() or word_wrap:
 			return
 		
 		settings = sublime.load_settings('Scroll Offset.sublime-settings')
@@ -56,7 +65,7 @@ class ScrollOffset(sublime_plugin.EventListener):
 		
 		num_visible_rows = num_visible_rows_in_view(view)
 		num_rows_in_buffer = view.rowcol(view.size())[0]
-
+		
 		first_desired_row = first_caret_row
 		last_desired_row = last_caret_row
 		num_necessary_rows = last_caret_row - first_caret_row + 1
