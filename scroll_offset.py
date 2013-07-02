@@ -10,7 +10,7 @@ import sublime_plugin
 try:
 	import mouse_event_listener
 except:
-	print "ScrollOffset: Install Mouse Event Listener (https://github.com/SublimeText/MouseEventListener) to ignore mouse clicks!"
+	print("ScrollOffset: Install Mouse Event Listener (https://github.com/SublimeText/MouseEventListener) to ignore mouse clicks!")
 
 def num_visible_rows_in_view(view):
 	vr = view.visible_region()
