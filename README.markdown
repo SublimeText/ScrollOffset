@@ -29,3 +29,7 @@ Then clone this repository:
 
 That's it!
 
+Preferences
+-----------
+
+Ensure that `word_wrap` is set to false in your user preferences to let this work.
