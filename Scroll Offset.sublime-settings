@@ -1,6 +1,6 @@
 {
-	"vertical_margin" : 8,
-	"horizontal_margin" : 20,
+	"vertical_margin" : 5,
+	"horizontal_margin" : 15,
 	
 	"show_debug_guides" : false
 }
