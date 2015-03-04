@@ -40,7 +40,7 @@ class ScrollOffset(sublime_plugin.EventListener):
 		line_height = view.line_height()
 		em_width = view.em_width()
 
-		settings = sublime.load_settings('Scroll Offset.sublime-settings')
+		settings = sublime.load_settings('ScrollOffset.sublime-settings')
 		BOTTOM_OFFSET = settings.get("bottom_margin")
 		TOP_OFFSET = settings.get("top_margin")
 		VERTICAL_OFFSET = settings.get("vertical_margin")
