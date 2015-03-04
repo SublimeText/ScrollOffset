@@ -9,6 +9,8 @@ Known issue:
 """
 
 import sublime, sublime_plugin
+# Python 3 compatibility
+from functools import reduce
 try:
 	import mouse_event_listener
 except:
